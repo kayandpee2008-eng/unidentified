@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURA | Precision Timepieces</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #d4af37;
+            --gold-hover: #f3e5ab;
+            --dark-bg: rgba(10, 10, 12, 0.88);
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(212, 175, 55, 0.3);
+            --text-light: #f8f9fa;
+            --text-muted: #a0a0a0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cinzel', 'Segoe UI', serif;
+        }
+
+        body {
+            color: var(--text-light);
+            background: #000 url('https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1920&auto=format&fit=crop') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .overlay {
+            background: radial-gradient(circle, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.94) 100%);
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        /* Navigation Bar */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: var(--dark-bg);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 2rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 4px;
+            color: var(--gold);
+            text-transform: uppercase;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--gold);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .nav-actions a {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            transition: color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-actions a:hover {
+            color: var(--gold);
+        }
+
+        /* Profile Dropdown Menu */
+        .profile-menu-container {
+            position: relative;
+        }
+
+        .profile-dropdown {
+            display: none;
+            position: absolute;
+            top: 2.2rem;
+            right: 0;
+            width: 240px;
+            background: var(--dark-bg);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(15px);
+            border-radius: 6px;
+            padding: 1rem 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            z-index: 1100;
+        }
+
+        .profile-menu-container:hover .profile-dropdown {
+            display: block;
+        }
+
+        .dropdown-header {
+            padding: 0.5rem 1.2rem 0.8rem 1.2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 0.5rem;
+        }
+
+        .dropdown-header p {
+            font-size: 0.85rem;
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .dropdown-header span {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .profile-dropdown a {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.6rem 1.2rem;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .profile-dropdown a:hover {
+            background: rgba(212, 175, 55, 0.15);
+            color: var(--gold);
+        }
+
+        .profile-dropdown a i {
+            width: 16px;
+            text-align: center;
+            color: var(--gold);
+        }
+
+        /* Login Modal Setup */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay:target {
+            display: flex;
+        }
+
+        .login-card {
+            background: rgba(15, 15, 18, 0.95);
+            border: 1px solid var(--border-color);
+            width: 100%;
+            max-width: 420px;
+            padding: 2.5rem 2rem;
+            border-radius: 8px;
+            position: relative;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.9);
+            text-align: center;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1.2rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: var(--gold);
+        }
+
+        .login-card h2 {
+            font-size: 1.8rem;
+            color: var(--gold);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-card p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 1.8rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-light);
+            margin-bottom: 0.4rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 4px;
+            color: #fff;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            border-color: var(--gold);
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-muted);
+        }
+
+        .form-options a {
+            color: var(--gold);
+            text-decoration: none;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 0.9rem;
+            background: var(--gold);
+            color: #000;
+            border: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .btn-submit:hover {
+            background: var(--gold-hover);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+        }
+
+        .login-footer {
+            margin-top: 1.5rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .login-footer a {
+            color: var(--gold);
+            text-decoration: none;
+        }
+
+        /* Hero Section */
+        .hero {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 6rem 2rem 4rem 2rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 300;
+            letter-spacing: 6px;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .hero p {
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto 2.5rem auto;
+            font-size: 1.1rem;
+        }
+
+        .btn-primary {
+            display: inline-block;
+            padding: 0.9rem 2.5rem;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.85rem;
+            transition: all 0.4s ease;
+            background: transparent;
+        }
+
+        .btn-primary:hover {
+            background: var(--gold);
+            color: #000;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+        }
+
+        /* Category Links Grid */
+        .quick-links {
+            max-width: 1300px;
+            margin: 2rem auto 5rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .category-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            text-align: center;
+            text-decoration: none;
+            color: var(--text-light);
+            backdrop-filter: blur(8px);
+            border-radius: 4px;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--gold);
+        }
+
+        .category-card i {
+            font-size: 1.8rem;
+            color: var(--gold);
+            margin-bottom: 0.8rem;
+        }
+
+        .category-card span {
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.85rem;
+        }
+
+        /* Products Section */
+        .products-section {
+            max-width: 1300px;
+            margin: 0 auto 6rem auto;
+            padding: 0 2rem;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            letter-spacing: 4px;
+            margin-bottom: 3rem;
+            text-transform: uppercase;
+            color: var(--gold);
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .product-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 6px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover {
+            border-color: var(--gold);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            filter: brightness(0.9);
+            transition: filter 0.3s ease;
+        }
+
+        .product-card:hover .product-image {
+            filter: brightness(1.05);
+        }
+
+        .product-info {
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .product-category {
+            font-size: 0.75rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .product-title {
+            font-size: 1.2rem;
+            margin: 0.5rem 0;
+            font-weight: 400;
+        }
+
+        .product-price {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            margin-bottom: 1.2rem;
+        }
+
+        .product-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-sm:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        /* Footer Matrix */
+        .links-matrix {
+            background: var(--dark-bg);
+            border-top: 1px solid var(--border-color);
+            padding: 4rem 2rem 2rem 2rem;
+            backdrop-filter: blur(12px);
+        }
+
+        .matrix-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .matrix-column h4 {
+            color: var(--gold);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1.2rem;
+        }
+
+        .matrix-column ul {
+            list-style: none;
+        }
+
+        .matrix-column ul li {
+            margin-bottom: 0.6rem;
+        }
+
+        .matrix-column ul li a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.3s ease;
+        }
+
+        .matrix-column ul li a:hover {
+            color: var(--gold);
+        }
+
+        .footer-bottom {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .social-links a {
+            color: var(--text-muted);
+            margin-left: 1rem;
+            font-size: 1rem;
+            transition: color 0.3s ease;
+        }
+
+        .social-links a:hover {
+            color: var(--gold);
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero h1 { font-size: 2.2rem; }
+            .footer-bottom { flex-direction: column; text-align: center; }
+            .social-links a { margin: 0 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay">
+        
+        <!-- Navigation -->
+        <header>
+            <div class="nav-container">
+                <a href="https://www.rolex.com" target="_blank" class="logo">AURA</a>
+                <ul class="nav-links">
+                    <li><a href="https://www.rolex.com/watches" target="_blank">Collections</a></li>
+                    <li><a href="https://www.rolex.com/watches/men" target="_blank">Men's</a></li>
+                    <li><a href="https://www.rolex.com/watches/women" target="_blank">Women's</a></li>
+                    <li><a href="https://www.patek.com/en/collection/rare-handcrafts" target="_blank">Limited Editions</a></li>
+                    <li><a href="https://www.audemarspiguet.com/com/en/about/our-heritage.html" target="_blank">Heritage</a></li>
+                </ul>
+                <div class="nav-actions">
+                    <a href="https://www.google.com/search?q=luxury+watches" target="_blank" title="Search"><i class="fas fa-search"></i></a>
+                    
+                    <!-- Profile Menu with External Links -->
+                    <div class="profile-menu-container">
+                        <a href="#login-modal" title="Account / Profile"><i class="far fa-user"></i></a>
+                        <div class="profile-dropdown">
+                            <div class="dropdown-header">
+                                <p>Welcome Back</p>
+                                <span>Collector's Account</span>
+                            </div>
+                            <a href="#login-modal"><i class="fas fa-sign-in-alt"></i> Sign In / Register</a>
+                            <a href="https://www.chrono24.com/user/index.htm" target="_blank"><i class="fas fa-columns"></i> External Dashboard</a>
+                            <a href="https://www.chrono24.com/user/orders.htm" target="_blank"><i class="fas fa-box"></i> Order History</a>
+                            <a href="https://www.chrono24.com/mywatchcollection" target="_blank"><i class="fas fa-shield-alt"></i> Digital Watch Vault</a>
+                            <a href="https://www.chrono24.com/user/favorites.htm" target="_blank"><i class="far fa-heart"></i> Saved Timepieces</a>
+                            <a href="https://www.chrono24.com/user/settings.htm" target="_blank"><i class="fas fa-sliders-h"></i> Profile Settings</a>
+                        </div>
+                    </div>
+
+                    <a href="https://www.chrono24.com/user/favorites.htm" target="_blank" title="Wishlist"><i class="far fa-heart"></i></a>
+                    <a href="https://www.chrono24.com/shopping-bag.htm" target="_blank" title="Cart"><i class="fas fa-shopping-bag"></i></a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1>Mastery in Motion</h1>
+            <p>Discover our curated collection of luxury Swiss-engineered mechanical timepieces designed for the modern connoisseur.</p>
+            <a href="https://www.chrono24.com/watches/index.htm" target="_blank" class="btn-primary">Explore External Catalog</a>
+        </section>
+
+        <!-- Quick Access Category Links -->
+        <div class="quick-links">
+            <a href="https://www.tagheuer.com/us/en/timepieces/collections/tag-heuer-carrera/" target="_blank" class="category-card">
+                <i class="fas fa-stopwatch"></i>
+                <span>Chronographs</span>
+            </a>
+            <a href="https://www.omeガwatches.com/en-us/watches/speedmaster" target="_blank" class="category-card">
+                <i class="fas fa-cogs"></i>
+                <span>Automatic</span>
+            </a>
+            <a href="https://www.rolex.com/watches/submariner" target="_blank" class="category-card">
+                <i class="fas fa-water"></i>
+                <span>Diver's Series</span>
+            </a>
+            <a href="https://www.patek.com/en/collection/grand-complications" target="_blank" class="category-card">
+                <i class="fas fa-gem"></i>
+                <span>Tourbillon</span>
+            </a>
+            <a href="https://www.tagheuer.com/us/en/smartwatches/collections/tag-heuer-connected/" target="_blank" class="category-card">
+                <i class="fas fa-microchip"></i>
+                <span>Luxury Smart</span>
+            </a>
+        </div>
+
+        <!-- Featured Products -->
+        <section class="products-section" id="collections">
+            <h2 class="section-title">Featured Timepieces</h2>
+            <div class="product-grid">
+                
+                <div class="product-card">
+                    <img src="https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=600&auto=format&fit=crop" alt="Aura Sovereign" class="product-image">
+                    <div class="product-info">
+                        <span class="product-category">Grand Complication</span>
+                        <h3 class="product-title">Aura Sovereign Gold</h3>
+                        <p class="product-price">$12,400</p>
+                        <div class="product-links">
+                            <a href="https://www.patek.com/en/company/about-patek-philippe" target="_blank" class="btn-sm">Acquire</a>
+                            <a href="https://www.patek.com/en/collection/grand-complications/5327J-001" target="_blank" class="btn-sm">Specs</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <img src="https://images.unsplash.com/photo-1547996160-81dfa63595aa?q=80&w=600&auto=format&fit=crop" alt="Chronos Stealth" class="product-image">
+                    <div class="product-info">
+                        <span class="product-category">Sport Edition</span>
+                        <h3 class="product-title">Chronos Stealth Black</h3>
+                        <p class="product-price">$8,800</p>
+                        <div class="product-links">
+                            <a href="https://www.omegawatches.com/en-us/watch-omega-speedmaster-dark-side-of-the-moon-co-axial-chronometer-chronograph-44-25-mm-31192445101007" target="_blank" class="btn-sm">Acquire</a>
+                            <a href="https://www.omegawatches.com/en-us/" target="_blank" class="btn-sm">Specs</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <img src="https://images.unsplash.com/photo-1539185441755-769473a23570?q=80&w=600&auto=format&fit=crop" alt="Oceanographer Pro" class="product-image">
+                    <div class="product-info">
+                        <span class="product-category">Diver Professional</span>
+                        <h3 class="product-title">Oceanographer 300M</h3>
+                        <p class="product-price">$6,500</p>
+                        <div class="product-links">
+                            <a href="https://www.rolex.com/watches/submariner/m126610ln-0001" target="_blank" class="btn-sm">Acquire</a>
+                            <a href="https://www.rolex.com/watches/submariner" target="_blank" class="btn-sm">Specs</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- External Link Matrix Footer -->
+        <footer class="links-matrix">
+            <div class="matrix-container">
+                <div class="matrix-column">
+                    <h4>Profile & Account</h4>
+                    <ul>
+                        <li><a href="#login-modal">Sign In Portal</a></li>
+                        <li><a href="https://www.chrono24.com/user/index.htm" target="_blank">Collector Dashboard</a></li>
+                        <li><a href="https://www.chrono24.com/user/orders.htm" target="_blank">Track Orders</a></li>
+                        <li><a href="https://www.chrono24.com/mywatchcollection" target="_blank">Digital Watch Vault</a></li>
+                        <li><a href="https://www.chrono24.com/info/privacy.htm" target="_blank">Privacy Settings</a></li>
+                    </ul>
+                </div>
+                <div class="matrix-column">
+                    <h4>Top Brands</h4>
+                    <ul>
+                        <li><a href="https://www.rolex.com" target="_blank">Rolex Official</a></li>
+                        <li><a href="https://www.patek.com" target="_blank">Patek Philippe</a></li>
+                        <li><a href="https://www.audemarspiguet.com" target="_blank">Audemars Piguet</a></li>
+                        <li><a href="https://www.omegawatches.com" target="_blank">Omega Watches</a></li>
+                        <li><a href="https://www.tagheuer.com" target="_blank">TAG Heuer</a></li>
+                    </ul>
+                </div>
+                <div class="matrix-column">
+                    <h4>Industry Resources</h4>
+                    <ul>
+                        <li><a href="https://www.hodinkee.com" target="_blank">Hodinkee Magazine</a></li>
+                        <li><a href="https://www.fratellowatches.com" target="_blank">Fratello Watches</a></li>
+                        <li><a href="https://www.ablogtowatch.com" target="_blank">aBlogtoWatch</a></li>
+                        <li><a href="https://www.watchpro.com" target="_blank">WatchPro News</a></li>
+                        <li><a href="https://www.watchuseek.com" target="_blank">WatchUSeek Community</a></li>
+                    </ul>
+                </div>
+                <div class="matrix-column">
+                    <h4>Marketplaces & Services</h4>
+                    <ul>
+                        <li><a href="https://www.chrono24.com" target="_blank">Chrono24 Marketplace</a></li>
+                        <li><a href="https://www.watchfinder.com" target="_blank">Watchfinder & Co.</a></li>
+                        <li><a href="https://www.bobswatches.com" target="_blank">Bob's Watches</a></li>
+                        <li><a href="https://www.crownandcaliber.com" target="_blank">Crown & Caliber</a></li>
+                        <li><a href="https://www.grand-seiko.com" target="_blank">Grand Seiko Official</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 AURA Luxury Timepieces Inc. All external links point to official luxury brand destinations.</p>
+                <div class="social-links">
+                    <a href="https://www.instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.x.com" target="_blank"><i class="fab fa-x-twitter"></i></a>
+                    <a href="https://www.youtube.com" target="_blank"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Pure CSS Login Modal -->
+    <div id="login-modal" class="modal-overlay">
+        <div class="login-card">
+            <a href="#" class="close-btn">&times;</a>
+            <h2>Client Portal</h2>
+            <p>Access your personal timepiece collection and order details.</p>
+            <form action="https://www.chrono24.com/user/login.htm" method="GET" target="_blank">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" placeholder="name@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                </div>
+                <div class="form-options">
+                    <label><input type="checkbox"> Remember Me</label>
+                    <a href="https://www.chrono24.com/user/forgot_password.htm" target="_blank">Forgot Password?</a>
+                </div>
+                <button type="submit" class="btn-submit">Sign In External</button>
+            </form>
+            <div class="login-footer">
+                Don't have an account? <a href="https://www.chrono24.com/user/register.htm" target="_blank">Register Here</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
